@@ -3,54 +3,60 @@ package com.pgs.apiProject.controller;
 import com.pgs.apiProject.entity.Journal;
 import com.pgs.apiProject.service.JournalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/journal")
+@CrossOrigin(origins = "*")
 public class JournalController {
 
+    private final JournalService journalService;
+
     @Autowired
-    JournalService journalService;
-
-    @GetMapping
-    public List<Journal> getAll() {
-        return journalService.getAll();
-    }
-
-    @GetMapping("id/{myId}")
-    public Journal getJournalById(@PathVariable String myId) {
-        return journalService.getJournalById(myId).orElse(null);
+    public JournalController(JournalService journalService) {
+        this.journalService = journalService;
     }
 
     @PostMapping
-    public Journal createJournal(@RequestBody Journal newJournal) {
-        journalService.saveJournal(newJournal);
-        return newJournal;
+    public ResponseEntity<Journal> createEntry(@RequestBody Journal entry) {
+        Journal savedEntry = journalService.saveEntry(entry);
+        return new ResponseEntity<>(savedEntry, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("id/{myId}")
-    public boolean deleteJournal(@PathVariable String myId) {
-        journalService.deleteJournal(myId);
-        return true;
+    @GetMapping
+    public List<Journal> getAllEntries() {
+        return journalService.getAllEntries();
     }
 
-    @PutMapping("id/{myId}")
-    public String updateJournal(@PathVariable String myId, @RequestBody Journal newJournal) {
-        Journal old = journalService.getJournalById(myId).orElse(null);
-        if (old != null) {
-            old.setTitle(newJournal.getTitle() != null && !newJournal.getTitle().equals("") ?
-                    newJournal.getTitle() : old.getTitle());
-
-            old.setContent(newJournal.getContent() != null && !newJournal.getContent().equals("") ?
-                    newJournal.getContent() : old.getContent());
-
-            journalService.saveJournal(old);
-            return "Data successfully updated";
-        } else {
-            return "Record not found";
+    @GetMapping("/{id}")
+    public ResponseEntity<Journal> getEntryById(@PathVariable String id) {
+        Journal entry = journalService.getEntryById(id);
+        if (entry == null) {
+            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(entry);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Journal> updateEntry(@PathVariable String id, @RequestBody Journal updatedEntry) {
+        Journal entry = journalService.updateEntry(id, updatedEntry);
+        if (entry == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(entry);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEntry(@PathVariable String id) {
+        boolean deleted = journalService.deleteEntry(id);
+        if (!deleted) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 }
 

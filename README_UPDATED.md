@@ -15,8 +15,6 @@ java-demo-project/
   └── README.md
 ```
 
----
-
 ## 🔧 Docker Setup
 
 ### Build and run with Docker Compose
@@ -35,27 +33,19 @@ This starts:
 docker compose down
 ```
 
----
-
 ## 📦 Local Build
-
-Build the project locally with Maven:
 
 ```bash
 ./mvnw clean package
 ```
 
-Run the application locally:
+Run locally:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
----
-
 ## 🌐 API Endpoints
-
-Use the journal CRUD endpoints:
 
 - `POST /journal`
 - `GET /journal`
@@ -63,32 +53,12 @@ Use the journal CRUD endpoints:
 - `PUT /journal/{id}`
 - `DELETE /journal/{id}`
 
-Example request body for `POST /journal`:
-
-```json
-{
-  "title": "My journal entry",
-  "content": "Today I learned how to use Docker with Spring Boot."
-}
-```
-
----
-
 ## 🧩 MongoDB Configuration
 
-The application uses the environment variable `MONGO_URI`.
+The app uses `MONGO_URI` from environment variables.
 
-Default value in `docker-compose.yml`:
+Default in `docker-compose.yml`:
 
 ```yaml
 MONGO_URI=mongodb://mongo:27017/journaldb
 ```
-
-If you run locally without Docker, set the same value in `src/main/resources/application.properties` or via your shell environment.
-
----
-
-## 🛑 Troubleshooting
-
-* If MongoDB cannot connect, make sure Docker Compose is running and the Mongo container is healthy.
-* If port 8080 is already in use, change `server.port` in `src/main/resources/application.properties`.
